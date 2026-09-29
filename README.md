@@ -3,7 +3,11 @@
 ## Original Idea
 I wanted to create a browser-based job finder for students and recent graduates. Users enter their skills, interests, preferred location, and experience level to explore job opportunities ranked by how closely they match those preferences. When someone enters their preferences and clicks “Find my matches,” the experience should show a reordered list of job opportunities and let them explore each role’s details.
 ## How to Run
-Users could click Find my matches. Click View opportunity to see details and a link to the original posting.
+Open https://nextstep-campus-matches.ql2609.chatgpt.site/ in your browser. No installation is required.
+1. Enter your skills, interests, preferred location, and experience level.
+2. Click Find my matches to see jobs ranked by your preferences.
+3. Click View opportunity to see a job’s details.
+4. Click View original job page to visit the employer’s posting.
 ## AI Tool and Selected Prompts
 I used Codex to help build this project. Selected prompts from my process: Build a job-search tool for college students and recent graduates. Users could enter their skills, interests, location, and experience level, and the tool would recommend suitable jobs. When someone click the find, it should update the most suitable jobs. And 我需要debugging，when someone 点击某一个job 的时候，the experience should有job的原始网址按钮，并且给的工作数量需要至少是近期的1000个。
 ## Reflection
