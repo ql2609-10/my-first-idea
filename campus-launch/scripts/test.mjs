@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {rankJobs,uniqueRecent,recent,safeUrl,inferLevel} from '../dist/core.js';
+const data=JSON.parse(await fs.readFile(new URL('../dist/jobs.json',import.meta.url)));
+const now=Date.now();assert(data.jobs.length>=1000);assert.equal(new Set(data.jobs.map(j=>j.url)).size,data.jobs.length);assert(data.jobs.every(j=>recent(j,now)&&safeUrl(j.url)));
+const base={skills:'',interest:'',location:'',level:'any'};assert.equal(rankJobs(data.jobs,base).length,data.jobs.length);
+const profiles=[{...base,skills:'Python, SQL',interest:'Data & Analytics',location:'Remote',level:'graduate'},{...base,skills:'Figma, design',interest:'Design',location:'New York',level:'junior'}];
+const ranked=profiles.map(p=>rankJobs(data.jobs,p));assert.notEqual(ranked[0][0].id,ranked[1][0].id);assert(ranked.every(jobs=>jobs.every(j=>j.level!=='experienced')));
+assert.equal(inferLevel('Engineer','5+ years of professional experience','FullTime'),'experienced');assert.equal(inferLevel('New Grad Engineer','','FullTime'),'graduate');
+assert.equal(safeUrl('javascript:alert(1)'),'');assert.equal(safeUrl('https://evil.example/fake'),'');assert.equal(uniqueRecent([{...data.jobs[0],publishedAt:'2020-01-01'}]).length,0);assert.equal(uniqueRecent([data.jobs[0],data.jobs[0]]).length,1);
+const originalFetch=globalThis.fetch;globalThis.fetch=async()=>{throw Error('simulated upstream outage')};
+const worker=(await import('../dist/server/index.js')).default;
+const fallback=await(await worker.fetch(new Request('https://test.example/api/jobs'),{},{waitUntil(){}})).json();assert.equal(fallback.failedSources.length,35);assert(fallback.jobs.length>=1000);assert(fallback.jobs.every(j=>recent(j,now)));globalThis.fetch=originalFetch;
+console.log('PASS: 1,000+ unique recent source-linked jobs; profile re-ranking; senior exclusion; stale/duplicate/unsafe URL rejection; 35-source outage fallback.');
